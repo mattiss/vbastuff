@@ -17,15 +17,22 @@ Sub ExportAsCSV(wks As Worksheet, sFilePath As String, sDelimiter As String)
     Next
     Close f
 End Sub
-Function AddNewSheet(sName As String) As Worksheet
-    Set AddNewSheet = ActiveWorkbook.Sheets.Add
+Function AddNewSheet(sName As String, Optional wb As Workbook = Nothing) As Worksheet
+    If (wb Is Nothing) Then Set wb = ActiveWorkbook
+    Application.DisplayAlerts = False
+    On Error Resume Next
+    wb.Sheets(sName).Delete
+    On Error GoTo 0
+    Application.DisplayAlerts = True
+    Set AddNewSheet = wb.Sheets.Add
     AddNewSheet.Name = sName
 End Function
-Function CreateFromCSV(sFilePath As String, sDelimiter As String) As Worksheet
+Function CreateFromCSV(sFilePath As String, sDelimiter As String, Optional wb As Workbook = Nothing) As Worksheet
+    If (wb Is Nothing) Then Set wb = ActiveWorkbook
     Dim sName As String
     sName = GetFileNameFromFilePath(sFilePath)
     
-    Set CreateFromCSV = AddNewSheet(sName)
+    Set CreateFromCSV = AddNewSheet(sName, wb)
     
     Dim f As Integer
     f = FreeFile
